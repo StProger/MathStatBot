@@ -16,5 +16,6 @@ class Groups(BaseModel):
     pay = IntegerField(default=0)
     common_pay = IntegerField(default=0)
     paid = IntegerField(default=0)
+    message_id = IntegerField()
     thread_id = IntegerField(null=True)
 
