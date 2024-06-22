@@ -13,7 +13,7 @@ class Groups(BaseModel):
 
     group_id = IntegerField(unique=True, null=False)
     waiting_pay = IntegerField(default=0)
-    pay = IntegerField(default=0)
+    about_pay = IntegerField(default=0)
     common_pay = IntegerField(default=0)
     paid = IntegerField(default=0)
     message_id = IntegerField()

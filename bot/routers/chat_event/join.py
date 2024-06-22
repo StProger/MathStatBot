@@ -1,4 +1,4 @@
-from aiogram import F, Router, Bot
+from aiogram import F, Router, Bot, types
 from aiogram.filters.chat_member_updated import \
     ChatMemberUpdatedFilter, IS_NOT_MEMBER, MEMBER, ADMINISTRATOR
 from aiogram.types import ChatMemberUpdated
@@ -36,10 +36,22 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 💴 Общая сумма: 0р
 
 
-💸 Выплачено: 0 $"""
+💸 Выплачено: 0 $</b>"""
 
         mes_ = await event.answer(
-            text
+            text,
+            reply_markup=types.InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        types.InlineKeyboardButton(
+                            text="🔼 Выделить", callback_data="highlight"
+                        ),
+                        types.InlineKeyboardButton(
+                            text="➡️ Посчитать", callback_data="calculate"
+                        )
+                    ]
+                ]
+            )
         )
 
         await bot.pin_chat_message(
@@ -51,3 +63,4 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
             group_id=event.chat.id,
             message_id=mes_.message_id
         ).execute()
+        print("Добавили")
