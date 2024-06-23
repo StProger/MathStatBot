@@ -16,6 +16,7 @@ class Groups(BaseModel):
     about_pay = IntegerField(default=0)
     common_pay = IntegerField(default=0)
     paid = IntegerField(default=0)
+    percent_group = FloatField(default=0.0)
     message_id = IntegerField()
     thread_id = IntegerField(null=True)
 

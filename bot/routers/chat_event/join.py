@@ -23,7 +23,7 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 
     if chat_info.permissions.can_send_messages:
 
-        text = f"""<b>[{event.from_user.first_name}] {date.today().strftime('%Y-%m-%d')}
+        text = f"""🌠<b>[{event.from_user.first_name}] {date.today().strftime('%Y-%m-%d')}
 Начало работы
 
 🆔 Айди чата: {event.chat.id}
