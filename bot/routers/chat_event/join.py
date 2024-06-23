@@ -4,6 +4,7 @@ from aiogram.filters.chat_member_updated import \
 from aiogram.types import ChatMemberUpdated
 
 from bot.database.models.groups import Groups
+from bot.keyboard import main_key
 
 from datetime import date
 
@@ -23,8 +24,7 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 
     if chat_info.permissions.can_send_messages:
 
-        text = f"""🌠<b>[{event.from_user.first_name}] {date.today().strftime('%Y-%m-%d')}
-Начало работы
+        text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
 
 🆔 Айди чата: {event.chat.id}
 🧮 Процент чата: 0.0%
@@ -40,18 +40,7 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 
         mes_ = await event.answer(
             text,
-            reply_markup=types.InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [
-                        types.InlineKeyboardButton(
-                            text="🔼 Выделить", callback_data="highlight"
-                        ),
-                        types.InlineKeyboardButton(
-                            text="➡️ Посчитать", callback_data="calculate"
-                        )
-                    ]
-                ]
-            )
+            reply_markup=main_key()
         )
 
         await bot.pin_chat_message(

@@ -12,8 +12,7 @@ class Payments(BaseModel):
         db_table = 'payments'
 
     id = IntegerField(primary_key=True)
-    user_id = IntegerField()
     username = TextField()
-    amount = FloatField()
+    amount = IntegerField()
     created_at = DateField()
     group_id = ForeignKeyField(Groups, backref='payments')

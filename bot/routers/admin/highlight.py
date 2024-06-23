@@ -3,6 +3,8 @@ from aiogram.exceptions import TelegramBadRequest
 
 from bot.database.models.payments import Payments
 from bot.database.models.groups import Groups
+from bot.keyboard import main_key
+from bot.service.redis_serv import user as user_redis
 
 from datetime import date
 
@@ -22,11 +24,16 @@ async def highlight(callback: types.CallbackQuery):
 
     for user in users:
 
-        user: Payments
-        users_text += f"[{user.user_id}] {user.username} | {user.amount}р\n"
+        users_text += f"{user.username} | {user.amount}р\n"
 
-    text = f"""🌠<b>[{callback.from_user.first_name}] {date.today().strftime('%Y-%m-%d')}
-Начало работы
+    if users_text == "":
+
+        await callback.answer()
+        return
+
+    await user_redis.set_users_text(chat_id=callback.message.chat.id, text=users_text)
+
+    text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
 
 🆔 Айди чата: {callback.message.chat.id}
 🧮 Процент чата: {group.percent_group}%
@@ -47,18 +54,7 @@ async def highlight(callback: types.CallbackQuery):
             chat_id=callback.message.chat.id,
             message_id=group.message_id,
             text=text,
-            reply_markup=types.InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [
-                        types.InlineKeyboardButton(
-                            text="🔼 Выделить", callback_data="highlight"
-                        ),
-                        types.InlineKeyboardButton(
-                            text="➡️ Посчитать", callback_data="calculate"
-                        )
-                    ]
-                ]
-            )
+            reply_markup=main_key()
         )
     except TelegramBadRequest:
         await callback.answer()
