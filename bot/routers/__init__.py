@@ -5,6 +5,7 @@ from bot.routers.chat_event import left
 from bot.routers import menu
 from bot.routers.admin import main_calculate, highlight
 from bot.routers.admin.calculate_actions import plus
+from bot.routers.admin.calculate_actions import minus
 
 
 def register_all_routers(dp: Dispatcher):
@@ -15,3 +16,4 @@ def register_all_routers(dp: Dispatcher):
     dp.include_router(main_calculate.router)
     dp.include_router(highlight.router)
     dp.include_router(plus.router)
+    dp.include_router(minus.router)

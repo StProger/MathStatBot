@@ -4,7 +4,7 @@ from aiogram import Router, F, types
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
-from bot.service.redis_serv import user
+from bot.service.redis_serv import user as user_redis
 from bot.database.models.groups import Groups
 from bot.database.models.payments import Payments
 from bot.keyboard import main_key
@@ -13,10 +13,10 @@ from bot.keyboard import main_key
 router = Router()
 
 
-@router.callback_query(F.data == "calculate_plus")
+@router.callback_query(F.data == "calculate_minus")
 async def get_amount(callback: types.CallbackQuery, state: FSMContext):
 
-    await state.set_state(f"plus:get_amount")
+    await state.set_state(f"minus:get_amount")
 
     mes_ = await callback.message.answer(
         text="Введите сумму и ник пользователя.",
@@ -31,7 +31,7 @@ async def get_amount(callback: types.CallbackQuery, state: FSMContext):
         )
     )
 
-    await user.set_msg_to_delete(
+    await user_redis.set_msg_to_delete(
         user_id=callback.from_user.id,
         message_id=mes_.message_id,
         chat_id=callback.message.chat.id
@@ -40,13 +40,13 @@ async def get_amount(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.message(StateFilter("plus:get_amount"))
+@router.message(StateFilter("minus:get_amount"))
 async def update_common_pay(message: types.Message, state: FSMContext):
 
     try:
         await message.bot.delete_message(
             chat_id=message.chat.id,
-            message_id=(await user.get_msg_to_delete(
+            message_id=(await user_redis.get_msg_to_delete(
                 user_id=message.from_user.id,
                 chat_id=message.chat.id
             ))
@@ -60,7 +60,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
         mes_ = await message.answer("Введите сумму и ник пользователя")
 
-        await user.set_msg_to_delete(
+        await user_redis.set_msg_to_delete(
             user_id=message.from_user.id,
             message_id=mes_.message_id,
             chat_id=message.chat.id
@@ -73,7 +73,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
         mes_ = await message.answer("Введите сначала сумму, потом ник пользователя\n(пример: <code>сумма ник</code>")
 
-        await user.set_msg_to_delete(
+        await user_redis.set_msg_to_delete(
             user_id=message.from_user.id,
             message_id=mes_.message_id,
             chat_id=message.chat.id
@@ -84,21 +84,30 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     username = data[1]
 
-    Payments.insert(
-        username=username,
-        amount=int(amount),
-        created_at=date.today(),
-        group_id=message.chat.id
-    ).execute()
+    query = Payments.delete().where((Payments.username == username) &
+                                    (Payments.amount == int(amount)))
+    query.execute()
 
-    query = Groups.update(common_pay=Groups.common_pay + int(amount)).where(Groups.group_id == message.chat.id)
+    query = Groups.update(common_pay=Groups.common_pay - int(amount)).where(Groups.group_id == message.chat.id)
     query.execute()
 
     group = Groups.get(Groups.group_id == message.chat.id)
 
-    users_text = await user.get_users_text(chat_id=message.chat.id)
+    users_text = await user_redis.get_users_text(chat_id=message.chat.id)
 
     if users_text:
+
+        users = Payments.select().where((Payments.group_id == message.chat.id) &
+                                        (Payments.created_at == date.today()))
+
+        users_text = ""
+
+        for user in users:
+            users_text += f"{user.username} | {user.amount}р\n"
+
+        if users_text != "":
+
+            await user_redis.set_users_text(chat_id=message.chat.id, text=users_text)
 
         text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
 
