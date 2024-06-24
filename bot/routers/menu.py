@@ -11,7 +11,5 @@ async def menu(callback: types.CallbackQuery, state: FSMContext):
 
     await state.clear()
     await callback.message.edit_reply_markup(
-        reply_markup=types.InlineKeyboardMarkup(
-                inline_keyboard=main_key()
-            )
+        reply_markup=main_key()
     )

@@ -35,8 +35,8 @@ async def highlight(callback: types.CallbackQuery):
 
     text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
 
-🆔 Айди чата: {callback.message.chat.id}
-🧮 Процент чата: {group.percent_group}%
+🆔 Айди чата: <code>{callback.message.chat.id}</code>
+🧮 Процент чата: <code>{group.percent_group}%</code>
 
 ⚜️ Статистика:
 

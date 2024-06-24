@@ -104,10 +104,47 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     if users_text:
 
-        text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+        history_payments = group.payment_history
 
-🆔 Айди чата: {message.chat.id}
-🧮 Процент чата: {group.percent_group}%
+        if history_payments:
+
+            history_payments = history_payments.split(",")
+
+            text_history = ""
+
+            for payment in history_payments[:-1]:
+                text_history += f"{payment}<b>р</b>\n"
+
+            text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+🆔 Айди чата: <code>{message.chat.id}</code>
+🧮 Процент чата: <code>{group.percent_group}%</code>
+
+⚜️ Статистика:
+
+История выплат:
+{text_history}
+
+⏳ Ожидаем: {group.waiting_pay}р
+💳 К выплате: {group.about_pay}р
+💴 Общая сумма: {group.common_pay}р
+
+{users_text}
+
+💸 Выплачено: {group.paid} $</b>"""
+
+            await message.bot.edit_message_text(
+                text=text,
+                reply_markup=main_key(),
+                chat_id=message.chat.id,
+                message_id=group.message_id
+            )
+        else:
+
+            text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+🆔 Айди чата: <code>{message.chat.id}</code>
+🧮 Процент чата: <code>{group.percent_group}%</code>
 
 ⚜️ Статистика:
 
@@ -119,19 +156,54 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
 💸 Выплачено: {group.paid} $</b>"""
 
-        await message.bot.edit_message_text(
-            text=text,
-            reply_markup=main_key(),
-            chat_id=message.chat.id,
-            message_id=group.message_id
-        )
+            await message.bot.edit_message_text(
+                text=text,
+                reply_markup=main_key(),
+                chat_id=message.chat.id,
+                message_id=group.message_id
+            )
 
     else:
 
-        text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+        history_payments = group.payment_history
 
-🆔 Айди чата: {message.chat.id}
-🧮 Процент чата: {group.percent_group}%
+        if history_payments:
+
+            history_payments = history_payments.split(",")
+
+            text_history = ""
+
+            for payment in history_payments:
+                text_history += f"{payment}<b>р</b>\n"
+
+            text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+🆔 Айди чата: <code>{message.chat.id}</code>
+🧮 Процент чата: <code>{group.percent_group}%</code>
+
+⚜️ Статистика:
+
+История выплат:
+{text_history}
+
+⏳ Ожидаем: {group.waiting_pay}р
+💳 К выплате: {group.about_pay}р
+💴 Общая сумма: {group.common_pay}р
+
+💸 Выплачено: {group.paid} $</b>"""
+
+            await message.bot.edit_message_text(
+                text=text,
+                reply_markup=main_key(),
+                chat_id=message.chat.id,
+                message_id=group.message_id
+            )
+        else:
+
+            text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+🆔 Айди чата: <code>{message.chat.id}</code>
+🧮 Процент чата: <code>{group.percent_group}%</code>
 
 ⚜️ Статистика:
 
@@ -141,12 +213,12 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
 💸 Выплачено: {group.paid} $</b>"""
 
-        await message.bot.edit_message_text(
-            text=text,
-            reply_markup=main_key(),
-            chat_id=message.chat.id,
-            message_id=group.message_id
-        )
+            await message.bot.edit_message_text(
+                text=text,
+                reply_markup=main_key(),
+                chat_id=message.chat.id,
+                message_id=group.message_id
+            )
 
     await state.clear()
 

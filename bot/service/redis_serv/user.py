@@ -13,7 +13,10 @@ async def get_msg_to_delete(user_id: int, chat_id: int) -> int:
 
 async def get_users_text(chat_id: int):
 
-    return await redis_pool.get(f"{chat_id}:users_text")
+    users_text = await redis_pool.get(f"{chat_id}:users_text")
+    if users_text == "":
+        return None
+    return users_text
 
 
 async def set_users_text(chat_id: int, text):

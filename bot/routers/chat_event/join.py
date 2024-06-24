@@ -26,8 +26,8 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 
         text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
 
-🆔 Айди чата: {event.chat.id}
-🧮 Процент чата: 0.0%
+🆔 Айди чата: <code>{event.chat.id}</code>
+🧮 Процент чата: <code>0.0%</code>
 
 ⚜️ Статистика:
 

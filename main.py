@@ -26,7 +26,6 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await logging.setup()
 
-
     try:
 
         await dp.start_polling(bot)

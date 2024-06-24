@@ -8,6 +8,7 @@ from bot.routers.admin.calculate_actions import plus
 from bot.routers.admin.calculate_actions import minus
 from bot.routers.admin.calculate_actions import minus_wait
 from bot.routers.admin.calculate_actions import plus_wait
+from bot.routers.admin.calculate_actions import percent
 
 
 def register_all_routers(dp: Dispatcher):
@@ -22,3 +23,5 @@ def register_all_routers(dp: Dispatcher):
     dp.include_router(minus_wait.router)
     dp.include_router(plus_wait.router)
     dp.include_router(cancel.router)
+    dp.include_router(percent.router)
+
