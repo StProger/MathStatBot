@@ -1,3 +1,4 @@
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pydantic_settings import BaseSettings
 
 from dotenv import load_dotenv
@@ -14,6 +15,7 @@ load_dotenv()
 class Settings(BaseSettings):
 
     BOT_TOKEN: str = os.getenv("BOT_TOKEN").strip()
+    BOT_TIMEZONE: str = "Europe/Moscow"
 
     FSM_REDIS_HOST: str = os.getenv("FSM_REDIS_HOST").strip()
     FSM_REDIS_DB: int = os.getenv("FSM_REDIS_DB").strip()
@@ -41,3 +43,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+BOT_SCHEDULER = AsyncIOScheduler(timezone=settings.BOT_TIMEZONE)
