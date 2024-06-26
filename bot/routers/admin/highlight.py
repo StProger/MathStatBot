@@ -5,6 +5,7 @@ from bot.database.models.payments import Payments
 from bot.database.models.groups import Groups
 from bot.keyboard import main_key
 from bot.service.redis_serv import user as user_redis
+from bot.service.misc.get_list_pay import get_list_pay
 
 from datetime import date
 
@@ -15,16 +16,9 @@ router = Router()
 @router.callback_query(F.data == "highlight")
 async def highlight(callback: types.CallbackQuery):
 
-    users = Payments.select().where((Payments.group_id == callback.message.chat.id) &
-                                    (Payments.created_at == date.today()))
-
     group: Groups = Groups.get(Groups.group_id == callback.message.chat.id)
 
-    users_text = ""
-
-    for user in users:
-
-        users_text += f"{user.username} | {user.amount}р\n"
+    users_text = await get_list_pay(chat_id=callback.message.chat.id)
 
     if users_text == "":
 

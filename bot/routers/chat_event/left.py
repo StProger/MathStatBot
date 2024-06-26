@@ -1,6 +1,7 @@
 from aiogram import F, Router
 from aiogram.filters.chat_member_updated import \
     ChatMemberUpdatedFilter, IS_NOT_MEMBER, MEMBER, ADMINISTRATOR
+from aiogram.fsm.context import FSMContext
 from aiogram.types import ChatMemberUpdated
 
 from bot.database.models.groups import Groups
@@ -16,8 +17,9 @@ router.my_chat_member.filter(F.chat.type.in_({"group", "supergroup"}))
         member_status_changed=ADMINISTRATOR >> IS_NOT_MEMBER
     )
 )
-async def bot_deleted_as_admin(event: ChatMemberUpdated):
+async def bot_deleted_as_admin(event: ChatMemberUpdated, state: FSMContext):
 
+    await state.clear()
     delete_payments = Payments.delete().where(Payments.group_id == event.chat.id)
     delete_payments.execute()
     delete_group = Groups.delete().where(Groups.group_id == event.chat.id)

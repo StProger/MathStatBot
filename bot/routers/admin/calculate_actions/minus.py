@@ -8,6 +8,7 @@ from bot.service.redis_serv import user as user_redis
 from bot.database.models.groups import Groups
 from bot.database.models.payments import Payments
 from bot.keyboard import main_key
+from bot.service.misc.get_list_pay import get_list_pay
 
 
 router = Router()
@@ -84,9 +85,12 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     username = data[1]
 
-    query = Payments.delete().where((Payments.username == username) &
-                                    (Payments.amount == int(amount)))
-    query.execute()
+    payment_user = Payments.get(Payments.username == username, Payments.amount == amount, Payments.created_at == date.today())
+    payment_user.delete_instance()
+
+    # query = Payments.delete().where((Payments.username == username) &
+    #                                 (Payments.amount == int(amount)))
+    # query.execute()
 
     query = Groups.update(common_pay=Groups.common_pay - int(amount)).where(Groups.group_id == message.chat.id)
     query.execute()
@@ -97,17 +101,19 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     if users_text:
 
-        users = Payments.select().where((Payments.group_id == message.chat.id) &
-                                        (Payments.created_at == date.today()))
+        new_users_text = await get_list_pay(chat_id=message.chat.id)
 
-        users_text = ""
+        # users = Payments.select().where((Payments.group_id == message.chat.id) &
+        #                                 (Payments.created_at == date.today()))
+        #
+        # users_text = ""
+        #
+        # for user in users:
+        #     users_text += f"{user.username} | {user.amount}р\n"
 
-        for user in users:
-            users_text += f"{user.username} | {user.amount}р\n"
+        if new_users_text != "":
 
-        if users_text != "":
-
-            await user_redis.set_users_text(chat_id=message.chat.id, text=users_text)
+            await user_redis.set_users_text(chat_id=message.chat.id, text=new_users_text)
 
         history_payments = group.payment_history
 
@@ -134,7 +140,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р
 💴 Общая сумма: {group.common_pay}р
 
-{users_text}
+{new_users_text}
 
 💸 Выплачено: {group.paid} $</b>"""
 
@@ -157,7 +163,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р
 💴 Общая сумма: {group.common_pay}р
 
-{users_text}
+{new_users_text}
 
 💸 Выплачено: {group.paid} $</b>"""
 

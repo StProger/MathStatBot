@@ -8,7 +8,8 @@ from bot.service.redis_serv import user
 from bot.database.models.groups import Groups
 from bot.database.models.payments import Payments
 from bot.keyboard import main_key
-
+from bot.service.misc.get_list_pay import get_list_pay
+from bot.service.redis_serv.user import set_users_text
 
 router = Router()
 
@@ -104,6 +105,10 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     if users_text:
 
+        new_users_text = await get_list_pay(chat_id=message.chat.id)
+
+        await set_users_text(chat_id=message.chat.id, text=new_users_text)
+
         history_payments = group.payment_history
 
         if history_payments:
@@ -129,7 +134,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р
 💴 Общая сумма: {group.common_pay}р
 
-{users_text}
+{new_users_text}
 
 💸 Выплачено: {group.paid} $</b>"""
 
@@ -152,7 +157,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р
 💴 Общая сумма: {group.common_pay}р
 
-{users_text}
+{new_users_text}
 
 💸 Выплачено: {group.paid} $</b>"""
 
