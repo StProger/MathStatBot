@@ -25,7 +25,7 @@ async def bot_deleted_as_admin(event: ChatMemberUpdated, state: FSMContext):
     delete_group = Groups.delete().where(Groups.group_id == event.chat.id)
     delete_group.execute()
     await set_users_text(chat_id=event.chat.id, text="")
-    print("Удалили")
+    # print("Удалили")
 
 
 @router.my_chat_member(
@@ -40,4 +40,4 @@ async def bot_deleted_as_member(event: ChatMemberUpdated):
     delete_group = Groups.delete().where(Groups.group_id == event.chat.id)
     delete_group.execute()
     await set_users_text(chat_id=event.chat.id, text="")
-    print("Удалили")
+    # print("Удалили")

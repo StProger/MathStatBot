@@ -21,7 +21,7 @@ async def get_amount(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(f"minus_wait:get_amount")
 
     mes_ = await callback.message.answer(
-        text="Введите сумму и ник пользователя.",
+        text="Введите сумму.",
         reply_markup=types.InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -58,22 +58,10 @@ async def update_common_pay(message: types.Message, state: FSMContext):
     except:
         pass
 
-    if len(message.text.split()) != 2:
+    amount = message.text
 
-        mes_ = await message.answer("Введите сумму и ник пользователя")
-
-        await user.set_msg_to_delete(
-            user_id=message.from_user.id,
-            message_id=mes_.message_id,
-            chat_id=message.chat.id
-        )
-        return
-
-    data = message.text.split()
-
-    if not (data[0].isdigit()):
-
-        mes_ = await message.answer("Введите сначала сумму, потом ник пользователя\n(пример: <code>сумма ник</code>")
+    if not (amount.isdigit()):
+        mes_ = await message.answer("Введите сумму.")
 
         await user.set_msg_to_delete(
             user_id=message.from_user.id,
@@ -82,15 +70,11 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         )
         return
 
-    amount = data[0]
-
-    username = data[1]
-
-    await plus_amount(
-        amount=int(amount),
-        username=username,
-        group_id=message.chat.id
-    )
+    # await plus_amount(
+    #     amount=int(amount),
+    #     username=username,
+    #     group_id=message.chat.id
+    # )
 
     # Payments.insert(
     #     username=username,
@@ -100,7 +84,6 @@ async def update_common_pay(message: types.Message, state: FSMContext):
     # ).execute()
 
     query = Groups.update(
-        common_pay=Groups.common_pay + int(amount),
         waiting_pay=Groups.waiting_pay - int(amount)
     ).where(Groups.group_id == message.chat.id)
 

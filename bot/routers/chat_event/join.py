@@ -52,4 +52,4 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
             group_id=event.chat.id,
             message_id=mes_.message_id
         ).execute()
-        print("Добавили")
+        # print("Добавили")

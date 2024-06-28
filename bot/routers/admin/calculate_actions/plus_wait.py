@@ -4,11 +4,13 @@ from aiogram import Router, F, types
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
+from bot.service.misc.get_list_pay import get_list_pay
 from bot.service.redis_serv import user
 from bot.database.models.groups import Groups
 from bot.database.models.payments import Payments
+from bot.database.api import plus_amount
 from bot.keyboard import main_key
-
+from bot.service.redis_serv.user import set_users_text
 
 router = Router()
 
@@ -19,7 +21,7 @@ async def get_amount(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(f"plus_wait:get_amount")
 
     mes_ = await callback.message.answer(
-        text="Введите сумму.",
+        text="Введите сумму и ник пользователя.",
         reply_markup=types.InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -58,9 +60,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     amount = message.text
 
-    if not (amount.isdigit()):
+    if len(message.text.split()) != 2:
 
-        mes_ = await message.answer("Введите сумму.")
+        mes_ = await message.answer("Введите сумму и ник пользователя")
 
         await user.set_msg_to_delete(
             user_id=message.from_user.id,
@@ -69,8 +71,31 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         )
         return
 
-    query = Groups.update(waiting_pay=Groups.waiting_pay + int(amount)).where(Groups.group_id == message.chat.id)
+    data = message.text.split()
+
+    if not (data[0].isdigit()):
+        mes_ = await message.answer("Введите сначала сумму, потом ник пользователя\n(пример: <code>сумма ник</code>)")
+
+        await user.set_msg_to_delete(
+            user_id=message.from_user.id,
+            message_id=mes_.message_id,
+            chat_id=message.chat.id
+        )
+        return
+
+    amount = data[0]
+
+    username = data[1]
+
+    query = Groups.update(waiting_pay=Groups.waiting_pay + int(amount),
+                          common_pay=Groups.common_pay + int(amount)).where(Groups.group_id == message.chat.id)
     query.execute()
+
+    await plus_amount(
+        amount=int(amount),
+        username=username,
+        group_id=message.chat.id
+    )
 
     group = Groups.get(Groups.group_id == message.chat.id)
 
@@ -78,6 +103,8 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     if users_text:
 
+        new_users_text = await get_list_pay(chat_id=message.chat.id)
+        await set_users_text(chat_id=message.chat.id, text=new_users_text)
         history_payments = group.payment_history
 
         if history_payments:
@@ -106,7 +133,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р
 💴 Общая сумма: {group.common_pay}р
 
-{users_text}
+{new_users_text}
 
 💸 Выплачено: {group.paid} $</b>"""
 
@@ -129,7 +156,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р
 💴 Общая сумма: {group.common_pay}р
 
-{users_text}
+{new_users_text}
 
 💸 Выплачено: {group.paid} $</b>"""
 

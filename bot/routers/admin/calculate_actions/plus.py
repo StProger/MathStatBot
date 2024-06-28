@@ -74,7 +74,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     if not (data[0].isdigit()):
 
-        mes_ = await message.answer("Введите сначала сумму, потом ник пользователя\n(пример: <code>сумма ник</code>")
+        mes_ = await message.answer("Введите сначала сумму, потом ник пользователя\n(пример: <code>сумма ник</code>)")
 
         await user.set_msg_to_delete(
             user_id=message.from_user.id,

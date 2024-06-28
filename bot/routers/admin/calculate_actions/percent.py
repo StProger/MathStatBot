@@ -95,9 +95,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         query = Groups.update(payment_history=history_payments,
                               paid=group.paid + group.about_pay).where(Groups.group_id == message.chat.id)
         query.execute()
-    print(group.common_pay)
+    #print(group.common_pay)
     about_pay = int(group.common_pay * (percent_users / 100))
-    print(about_pay)
+    #print(about_pay)
     query = Groups.update(
         about_pay=about_pay,
         percent_group=float(percent_admin)
@@ -113,14 +113,14 @@ async def update_common_pay(message: types.Message, state: FSMContext):
     if users_text:
 
         history_payments = group.payment_history
-        print(history_payments)
+        #print(history_payments)
 
         if history_payments:
 
             history_payments = history_payments.split(",")
             if history_payments[-1] == '':
                 history_payments = history_payments[:-1]
-            print(f"Разделённый: {history_payments}")
+            #print(f"Разделённый: {history_payments}")
             text_history = ""
 
             for payment in history_payments:
