@@ -7,6 +7,7 @@ from aiogram.fsm.context import FSMContext
 from bot.service.redis_serv import user
 from bot.database.models.groups import Groups
 from bot.database.models.payments import Payments
+from bot.database.api import plus_amount
 from bot.keyboard import main_key
 from bot.service.misc.get_list_pay import get_list_pay
 from bot.service.redis_serv.user import set_users_text
@@ -85,12 +86,18 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     username = data[1]
 
-    Payments.insert(
-        username=username,
+    await plus_amount(
         amount=int(amount),
-        created_at=date.today(),
+        username=username,
         group_id=message.chat.id
-    ).execute()
+    )
+
+    # Payments.insert(
+    #     username=username,
+    #     amount=int(amount),
+    #     created_at=date.today(),
+    #     group_id=message.chat.id
+    # ).execute()
 
     query = Groups.update(
         common_pay=Groups.common_pay + int(amount),
@@ -114,6 +121,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         if history_payments:
 
             history_payments = history_payments.split(",")
+
+            if history_payments[-1] == '':
+                history_payments = history_payments[:-1]
 
             text_history = ""
 
@@ -175,6 +185,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         if history_payments:
 
             history_payments = history_payments.split(",")
+
+            if history_payments[-1] == '':
+                history_payments = history_payments[:-1]
 
             text_history = ""
 

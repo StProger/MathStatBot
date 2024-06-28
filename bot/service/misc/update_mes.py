@@ -3,12 +3,15 @@ from datetime import date
 from aiogram import Bot
 
 from bot.database.models.groups import Groups
+from bot.database.models.payments import Payments
 from bot.keyboard import main_key
 
 
 async def update_mes(bot: Bot):
 
     groups: list[Groups] = Groups.select()
+    query_delete_payments = Payments.delete()
+    query_delete_payments.execute()
 
     for group in groups:
 

@@ -7,6 +7,7 @@ from aiogram.fsm.context import FSMContext
 from bot.service.redis_serv import user as user_redis
 from bot.database.models.groups import Groups
 from bot.database.models.payments import Payments
+from bot.database.api import minus_amount
 from bot.keyboard import main_key
 from bot.service.misc.get_list_pay import get_list_pay
 
@@ -85,8 +86,57 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     username = data[1]
 
-    payment_user = Payments.get(Payments.username == username, Payments.amount == amount, Payments.created_at == date.today())
-    payment_user.delete_instance()
+    result_minus_amount = await minus_amount(
+        amount=int(amount),
+        username=username,
+        group_id=message.chat.id
+    )
+
+    if result_minus_amount == "NOT MONEY":
+
+        mes_ = await message.answer(
+            text="У юзера не хватает баланса для вычета.",
+            reply_markup=types.InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    types.InlineKeyboardButton(
+                        text="Отмена", callback_data="cancel"
+                    )
+                ]
+            ]
+        )
+        )
+
+        await user_redis.set_msg_to_delete(
+            user_id=message.from_user.id,
+            message_id=mes_.message_id,
+            chat_id=message.chat.id
+        )
+        return
+
+    if result_minus_amount == "NOT EXIST":
+        mes_ = await message.answer(
+            text="Нет такого юзера.",
+            reply_markup=types.InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    types.InlineKeyboardButton(
+                        text="Отмена", callback_data="cancel"
+                    )
+                ]
+            ]
+        )
+        )
+
+        await user_redis.set_msg_to_delete(
+            user_id=message.from_user.id,
+            message_id=mes_.message_id,
+            chat_id=message.chat.id
+        )
+        return
+
+    # payment_user = Payments.get(Payments.username == username, Payments.amount == amount, Payments.created_at == date.today())
+    # payment_user.delete_instance()
 
     # query = Payments.delete().where((Payments.username == username) &
     #                                 (Payments.amount == int(amount)))
@@ -120,6 +170,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         if history_payments:
 
             history_payments = history_payments.split(",")
+
+            if history_payments[-1] == '':
+                history_payments = history_payments[:-1]
 
             text_history = ""
 
@@ -181,6 +234,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         if history_payments:
 
             history_payments = history_payments.split(",")
+
+            if history_payments[-1] == '':
+                history_payments = history_payments[:-1]
 
             text_history = ""
 

@@ -84,6 +84,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
             history_payments = history_payments.split(",")
 
+            if history_payments[-1] == '':
+                history_payments = history_payments[:-1]
+
             text_history = ""
 
             for payment in history_payments[:-1]:
@@ -144,6 +147,9 @@ async def update_common_pay(message: types.Message, state: FSMContext):
         if history_payments:
 
             history_payments = history_payments.split(",")
+
+            if history_payments[-1] == '':
+                history_payments = history_payments[:-1]
 
             text_history = ""
 
