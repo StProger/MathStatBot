@@ -37,7 +37,7 @@ async def update_mes(bot: Bot):
 💴 Общая сумма: 0р
 
 
-💸 Выплачено: {group.paid} $</b>"""
+💸 Выплачено: {group.paid}р</b>"""
 
         await bot.edit_message_text(
             text=text,

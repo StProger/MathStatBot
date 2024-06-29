@@ -40,7 +40,7 @@ async def highlight(callback: types.CallbackQuery):
 
 {users_text}
 
-💸 Выплачено: {group.paid} $</b>"""
+💸 Выплачено: {group.paid}р</b>"""
 
     try:
 

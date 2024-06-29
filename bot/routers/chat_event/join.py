@@ -36,7 +36,7 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 💴 Общая сумма: 0р
 
 
-💸 Выплачено: 0 $</b>"""
+💸 Выплачено: 0р</b>"""
 
         mes_ = await event.answer(
             text,
