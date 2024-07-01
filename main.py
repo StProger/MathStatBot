@@ -13,7 +13,7 @@ from bot.database.models.groups import Groups
 from bot.database.models.payments import Payments
 from bot.service.misc.update_mes import update_mes
 from bot.filters.admin_filter import IsAdmin
-from bot.filters import register_filter
+from bot.filters import register_filters
 
 import asyncio
 
