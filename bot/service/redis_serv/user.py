@@ -11,6 +11,16 @@ async def get_msg_to_delete(user_id: int, chat_id: int) -> int:
     return await redis_pool.get(f"{chat_id}_{user_id}:msg:id")
 
 
+async def set_currency(value):
+
+    await redis_pool.set(f"currency_amount", value)
+
+
+async def get_currency():
+
+    return float(await redis_pool.get(f"currency_amount"))
+
+
 async def get_users_text(chat_id: int):
 
     users_text = await redis_pool.get(f"{chat_id}:users_text")

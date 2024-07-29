@@ -101,6 +101,8 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
     users_text = await user.get_users_text(chat_id=message.chat.id)
 
+    currency = float(await user.get_currency())
+
     if users_text:
 
         new_users_text = await get_list_pay(chat_id=message.chat.id)
@@ -117,9 +119,11 @@ async def update_common_pay(message: types.Message, state: FSMContext):
             text_history = ""
 
             for payment in history_payments[:-1]:
-                text_history += f"{payment}<b>р</b>\n"
+                text_history += f"{payment}р ({round(float(payment) / currency)}$)\n"
 
             text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+Курс доллара: {currency:.2f}р
 
 🆔 Айди чата: <code>{message.chat.id}</code>
 🧮 Процент чата: <code>{group.percent_group}%</code>
@@ -130,7 +134,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 {text_history}
 
 ⏳ Ожидаем: {group.waiting_pay}р
-💳 К выплате: {group.about_pay}р
+💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
 💴 Общая сумма: {group.common_pay}р
 
 {new_users_text}
@@ -153,7 +157,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 ⚜️ Статистика:
 
 ⏳ Ожидаем: {group.waiting_pay}р
-💳 К выплате: {group.about_pay}р
+💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
 💴 Общая сумма: {group.common_pay}р
 
 {new_users_text}
@@ -181,9 +185,11 @@ async def update_common_pay(message: types.Message, state: FSMContext):
             text_history = ""
 
             for payment in history_payments:
-                text_history += f"{payment}<b>р</b>\n"
+                text_history += f"{payment}р ({round(float(payment) / currency)}$)\n"
 
             text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+Курс доллара: {currency:.2f}р
 
 🆔 Айди чата: <code>{message.chat.id}</code>
 🧮 Процент чата: <code>{group.percent_group}%</code>
@@ -194,7 +200,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 {text_history}
 
 ⏳ Ожидаем: {group.waiting_pay}р
-💳 К выплате: {group.about_pay}р
+💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
 💴 Общая сумма: {group.common_pay}р
 
 💸 Выплачено: {group.paid}р</b>"""
@@ -209,13 +215,15 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
             text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
 
+Курс доллара: {currency:.2f}р
+
 🆔 Айди чата: <code>{message.chat.id}</code>
 🧮 Процент чата: <code>{group.percent_group}%</code>
 
 ⚜️ Статистика:
 
 ⏳ Ожидаем: {group.waiting_pay}р
-💳 К выплате: {group.about_pay}р
+💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
 💴 Общая сумма: {group.common_pay}р
 
 💸 Выплачено: {group.paid}р</b>"""

@@ -27,3 +27,4 @@ class IsAdmin(Filter):
         except Exception as e:
 
             print(e)
+            return True

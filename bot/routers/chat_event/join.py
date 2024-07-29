@@ -5,6 +5,7 @@ from aiogram.types import ChatMemberUpdated
 
 from bot.database.models.groups import Groups
 from bot.keyboard import main_key
+from bot.service.redis_serv.user import get_currency
 
 from datetime import date
 
@@ -24,7 +25,11 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 
     if chat_info.permissions.can_send_messages:
 
+        currency = float(await get_currency())
+
         text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+    
+Курс доллара: {currency:.2f}р
 
 🆔 Айди чата: <code>{event.chat.id}</code>
 🧮 Процент чата: <code>0.0%</code>
@@ -32,7 +37,7 @@ async def bot_added_as_admin(event: ChatMemberUpdated, bot: Bot):
 ⚜️ Статистика:
 
 ⏳ Ожидаем: 0р
-💳 К выплате: 0р
+💳 К выплате: 0р (0$)
 💴 Общая сумма: 0р
 
 

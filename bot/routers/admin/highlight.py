@@ -20,6 +20,8 @@ async def highlight(callback: types.CallbackQuery):
 
     users_text = await get_list_pay(chat_id=callback.message.chat.id)
 
+    currency = float(await user_redis.get_currency())
+
     if users_text == "":
 
         await callback.answer()
@@ -27,7 +29,55 @@ async def highlight(callback: types.CallbackQuery):
 
     await user_redis.set_users_text(chat_id=callback.message.chat.id, text=users_text)
 
-    text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+    history_payments = group.payment_history
+
+    if history_payments:
+
+        history_payments = history_payments.split(",")
+
+        if history_payments[-1] == '':
+            history_payments = history_payments[:-1]
+
+        text_history = ""
+
+        for payment in history_payments[:-1]:
+            text_history += f"{payment}р ({round(float(payment) / currency)}$)\n"
+
+        text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+Курс доллара: {currency:.2f}р
+
+🆔 Айди чата: <code>{callback.message.chat.id}</code>
+🧮 Процент чата: <code>{group.percent_group}%</code>
+
+⚜️ Статистика:
+
+История выплат:
+{text_history}
+
+⏳ Ожидаем: {group.waiting_pay}р
+💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
+💴 Общая сумма: {group.common_pay}р
+
+{users_text}
+
+💸 Выплачено: {group.paid}р</b>"""
+
+        try:
+            await callback.bot.edit_message_text(
+                text=text,
+                reply_markup=main_key(),
+                chat_id=callback.message.chat.id,
+                message_id=group.message_id
+            )
+        except TelegramBadRequest:
+            await callback.answer()
+            return
+    else:
+
+        text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+
+Курс доллара: {currency:.2f}р
 
 🆔 Айди чата: <code>{callback.message.chat.id}</code>
 🧮 Процент чата: <code>{group.percent_group}%</code>
@@ -35,21 +85,49 @@ async def highlight(callback: types.CallbackQuery):
 ⚜️ Статистика:
 
 ⏳ Ожидаем: {group.waiting_pay}р
-💳 К выплате: {group.about_pay}р
+💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
 💴 Общая сумма: {group.common_pay}р
 
 {users_text}
 
 💸 Выплачено: {group.paid}р</b>"""
 
-    try:
+        try:
+            await callback.bot.edit_message_text(
+                text=text,
+                reply_markup=main_key(),
+                chat_id=callback.message.chat.id,
+                message_id=group.message_id
+            )
+        except TelegramBadRequest:
+            await callback.answer()
+            return
 
-        await callback.bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=group.message_id,
-            text=text,
-            reply_markup=main_key()
-        )
-    except TelegramBadRequest:
-        await callback.answer()
-        return
+#     text = f"""🌠<b>{date.today().strftime('%Y-%m-%d')} Начало работы
+#
+# Курс доллара: {currency:.2f}
+#
+# 🆔 Айди чата: <code>{callback.message.chat.id}</code>
+# 🧮 Процент чата: <code>{group.percent_group}%</code>
+#
+# ⚜️ Статистика:
+#
+# ⏳ Ожидаем: {group.waiting_pay}р
+# 💳 К выплате: {group.about_pay}р {round(group.about_pay * currency)}$
+# 💴 Общая сумма: {group.common_pay}р
+#
+# {users_text}
+#
+# 💸 Выплачено: {group.paid}р</b>"""
+#
+#     try:
+#
+#         await callback.bot.edit_message_text(
+#             chat_id=callback.message.chat.id,
+#             message_id=group.message_id,
+#             text=text,
+#             reply_markup=main_key()
+#         )
+#     except TelegramBadRequest:
+#         await callback.answer()
+#         return
