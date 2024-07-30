@@ -61,7 +61,7 @@ async def highlight(callback: types.CallbackQuery):
 
 {users_text}
 
-💸 Выплачено: {group.paid}р</b>"""
+💸 Выплачено: {group.paid}р ({round((float(group.paid) * currency))}$)</b>"""
 
         try:
             await callback.bot.edit_message_text(
@@ -90,7 +90,7 @@ async def highlight(callback: types.CallbackQuery):
 
 {users_text}
 
-💸 Выплачено: {group.paid}р</b>"""
+💸 Выплачено: {group.paid}р ({round((float(group.paid) * currency))}$)</b>"""
 
         try:
             await callback.bot.edit_message_text(
