@@ -14,12 +14,14 @@ from bot.database.models.payments import Payments
 from bot.service.misc.update_mes import update_mes
 from bot.filters.admin_filter import IsAdmin
 from bot.filters import register_filters
+from bot.service.redis_serv.user import set_currency
 
 import asyncio
 
 
 async def main():
 
+    await set_currency(90)
     storage = RedisStorage.from_url(settings.fsm_redis_url)
 
     dp = Dispatcher(storage=storage)
