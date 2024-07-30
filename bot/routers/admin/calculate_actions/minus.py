@@ -199,7 +199,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
 {new_users_text}
 
-💸 Выплачено: {group.paid}р ({round((float(group.paid) * currency))}$)</b>"""
+💸 Выплачено: {group.paid}р ({round((float(group.paid) / currency))}$)</b>"""
 
             await message.bot.edit_message_text(
                 text=text,
@@ -224,7 +224,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 
 {new_users_text}
 
-💸 Выплачено: {group.paid}р ({round((float(group.paid) * currency))}$)</b>"""
+💸 Выплачено: {group.paid}р ({round((float(group.paid) / currency))}$)</b>"""
 
             await message.bot.edit_message_text(
                 text=text,
@@ -265,7 +265,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
 💴 Общая сумма: {group.common_pay}р
 
-💸 Выплачено: {group.paid}р ({round((float(group.paid) * currency))}$)</b>"""
+💸 Выплачено: {group.paid}р ({round((float(group.paid) / currency))}$)</b>"""
 
             await message.bot.edit_message_text(
                 text=text,
@@ -288,7 +288,7 @@ async def update_common_pay(message: types.Message, state: FSMContext):
 💳 К выплате: {group.about_pay}р ({round(group.about_pay / currency)}$)
 💴 Общая сумма: {group.common_pay}р
 
-💸 Выплачено: {group.paid}р ({round((float(group.paid) * currency))}$)</b>"""
+💸 Выплачено: {group.paid}р ({round((float(group.paid) / currency))}$)</b>"""
 
             await message.bot.edit_message_text(
                 text=text,
